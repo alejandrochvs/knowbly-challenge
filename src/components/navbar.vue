@@ -6,7 +6,7 @@
       <b-navbar-nav class="ml-auto">
         <b-nav-form>
           <b-form-input @input="search()" v-model="query.tags" size="sm" class="mr-sm-2" type="text"
-                        placeholder="Search"/>
+                        placeholder="Search"></b-form-input>
           <router-link :to="{ path: 'images', query: query}">
             <b-button size="sm" class="my-2 my-sm-0" type="submit">Search</b-button>
           </router-link>
@@ -35,7 +35,6 @@ export default {
     }
   },
   mounted () {
-    console.log('mounted')
     if (this.$route.query.tags) {
       this.query = this.$route.query
     }
