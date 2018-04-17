@@ -1,34 +1,43 @@
 <template>
   <div class="row main images justify-content-center">
     <div class="col">
-      <div class="container mt-2 p-3 images-container">
+      <div class="container my-5 p-4 images-container">
         <div class="row flex-row">
           <div class="col-12">
             <h1>
-              {{$route.query.tags ? 'Results for ' + $route.query.tags : 'Any'}}
+              {{$route.query.tags ? 'Results for "' + $route.query.tags + '"' : 'Any'}}
             </h1>
+            <hr>
           </div>
-          <div class="col-12 col-sm-6 col-md-4 my-3" v-for="photo in photos">
+          <div v-show="loading" v-for="loadingCard in loadingArr" class="col-12 col-sm-6 col-md-4 my-3">
+            <loading-card></loading-card>
+          </div>
+          <div v-show="!loading" class="col-12 col-sm-6 col-md-4 my-3" v-for="photo in photos">
             <b-card
-              :img-src="photo.sizes[1].source"
-              img-alt="Image"
+              :img-alt="photo.title"
               img-top
             >
-              <h4>
-                <a class="nav-link" style="color: #333" :href="'http://flickr.com/photos/' + photo.profile.id +'/' +
-                photo.id"
-                   target="_blank">
-                  {{photo.title || "No title"}}
+              <img class="w-100" :src="photo.sizes[1].source" alt="">
+              <b-card-header>
+                <h4 class="one-line">
+                  <a class="" style="color: #333" :href="'http://flickr.com/photos/' + photo.profile.id +'/' +
+                photo.id" :title="photo.title || 'No title'" target="_blank">
+                    {{photo.title || "No title"}}
+                  </a>
+                </h4>
+              </b-card-header>
+              <b-card-footer>
+                <a v-if="photo.profile.first_name" :href="'http://flickr.com/' + photo.owner">
+                  <small class="text-muted">{{photo.profile.first_name}} {{photo.profile.last_name}}</small>
                 </a>
-              </h4>
-              <a v-if="photo.profile.first_name" :href="'http://flickr.com/' + photo.owner">
-                <small class="text-muted">{{photo.profile.first_name}} {{photo.profile.last_name}}</small>
-              </a>
-              <small v-if="!photo.profile.first_name" class="text-muted">Anonymous</small>
+                <small v-if="!photo.profile.first_name" class="text-muted">Anonymous</small>
+              </b-card-footer>
             </b-card>
           </div>
           <div class="col-12">
-            <b-pagination-nav align="center" class="m-auto" base-url="#" :number-of-pages="10" v-model="page"/>
+            <b-pagination-nav per-page="12" v-if="pages" align="center" class="m-auto" base-url="#"
+                              :number-of-pages="pages"
+                              v-model="page"/>
           </div>
         </div>
       </div>
@@ -37,12 +46,17 @@
 </template>
 
 <script>
+import LoadingCard from "./loading-card";
 export default {
   name: 'images',
+  components: {LoadingCard},
   data () {
     return {
       photos: [],
-      page: 0
+      loadingArr: new Array(12),
+      page: 0,
+      pages: 0,
+      loading : true
     }
   },
   methods: {
@@ -61,9 +75,11 @@ export default {
       })
     },
     getPhotos () {
+      this.loading = true;
       let url =
           `https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=b4b1a215463c789385e178d1dbd70228&tags=${encodeURI(this.$route.query.tags)}&per_page=12&page=${this.page}&format=json&nojsoncallback=1`
       this.$http.get(url).then((photosRes) => {
+        this.pages = photosRes.body.photos.pages
         this.photos = []
         photosRes.body.photos.photo.forEach((photo) => {
           this.getProfile(photo.owner).then((profile) => {
@@ -71,6 +87,9 @@ export default {
             this.getSizes(photo.id).then((sizes) => {
               photo.sizes = sizes
               this.photos.push(photo)
+              if (this.photos.length === 12) {
+                this.loading = false;
+              }
             })
           })
         })

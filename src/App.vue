@@ -28,6 +28,21 @@
     .main{
       min-height: 90vh;
       background: white;
+      .one-line{
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .card-body{
+        padding: 0;
+        background: white;
+      }
+      b-card-header{
+        background: white;
+      }
+      b-card-footer{
+        background: white;
+      }
     }
   }
 </style>
