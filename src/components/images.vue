@@ -1,9 +1,35 @@
 <template>
-  <div class="row main images">
+  <div class="row main images justify-content-center">
     <div class="col">
-      <div class="container mt-2 p-2 images-container">
-        <div class="row">
-          <div class="col">Images</div>
+      <div class="container mt-2 p-3 images-container">
+        <div class="row flex-row">
+          <div class="col-12">
+            <h1>
+              {{$route.query.tags ? 'Results for ' + $route.query.tags : 'Any'}}
+            </h1>
+          </div>
+          <div class="col-12 col-sm-6 col-md-4 my-3" v-for="photo in photos">
+            <b-card
+              :img-src="photo.sizes[1].source"
+              img-alt="Image"
+              img-top
+            >
+              <h4>
+                <a class="nav-link" style="color: #333" :href="'http://flickr.com/photos/' + photo.profile.id +'/' +
+                photo.id"
+                   target="_blank">
+                  {{photo.title || "No title"}}
+                </a>
+              </h4>
+              <a v-if="photo.profile.first_name" :href="'http://flickr.com/' + photo.owner">
+                <small class="text-muted">{{photo.profile.first_name}} {{photo.profile.last_name}}</small>
+              </a>
+              <small v-if="!photo.profile.first_name" class="text-muted">Anonymous</small>
+            </b-card>
+          </div>
+          <div class="col-12">
+            <b-pagination-nav align="center" class="m-auto" base-url="#" :number-of-pages="10" v-model="page"/>
+          </div>
         </div>
       </div>
     </div>
@@ -12,13 +38,59 @@
 
 <script>
 export default {
-  name: 'images'
+  name: 'images',
+  data () {
+    return {
+      photos: [],
+      page: 0
+    }
+  },
+  methods: {
+    getProfile (_userId) {
+      return new Promise((resolve, reject) => {
+        this.$http.get(`https://api.flickr.com/services/rest/?method=flickr.profile.getProfile&api_key=b4b1a215463c789385e178d1dbd70228&user_id=${_userId}&format=json&nojsoncallback=1`).then((profileRes) => {
+          resolve(profileRes.body.profile)
+        })
+      })
+    },
+    getSizes (_photoId) {
+      return new Promise((resolve, reject) => {
+        this.$http.get(`https://api.flickr.com/services/rest/?method=flickr.photos.getSizes&api_key=b4b1a215463c789385e178d1dbd70228&photo_id=${_photoId}&format=json&nojsoncallback=1`).then((profileRes) => {
+          resolve(profileRes.body.sizes.size)
+        })
+      })
+    },
+    getPhotos () {
+      let url =
+          `https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=b4b1a215463c789385e178d1dbd70228&tags=${encodeURI(this.$route.query.tags)}&per_page=12&page=${this.page}&format=json&nojsoncallback=1`
+      this.$http.get(url).then((photosRes) => {
+        this.photos = []
+        photosRes.body.photos.photo.forEach((photo) => {
+          this.getProfile(photo.owner).then((profile) => {
+            photo.profile = profile
+            this.getSizes(photo.id).then((sizes) => {
+              photo.sizes = sizes
+              this.photos.push(photo)
+            })
+          })
+        })
+      })
+    }
+  },
+  mounted () {
+    this.getPhotos()
+  },
+  watch: {
+    '$route.query' () {
+      this.getPhotos()
+    }
+  }
 }
 </script>
 
 <style scoped lang="scss">
-  .images{
-    .images-container{
+  .images {
+    .images-container {
       background: whitesmoke;
       border-radius: 5px;
     }
