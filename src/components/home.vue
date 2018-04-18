@@ -70,7 +70,6 @@
         this.loading = true;
         this.$http.get(`https://api.flickr.com/services/rest/?method=flickr.photos.getRecent&api_key=${this.api_key}&per_page=12&page=${_page}&format=json&nojsoncallback=1`).then((photosRes) => {
           photosRes.body.photos.photo.forEach((photo) => {
-            console.log(photo)
             this.getProfile(photo.owner).then((profile) => {
               photo.profile = profile
               this.getSizes(photo.id).then((sizes) => {

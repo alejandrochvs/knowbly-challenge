@@ -80,7 +80,6 @@ export default {
       let url =
           `https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=${this.api_key}&tags=${encodeURI(this.$route.query.tags)}&per_page=12&page=${this.page}&format=json&nojsoncallback=1`
       this.$http.get(url).then((photosRes) => {
-        console.log(photosRes)
         this.pages = photosRes.body.photos.pages
         this.photos = []
         photosRes.body.photos.photo.forEach((photo) => {

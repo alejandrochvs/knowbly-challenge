@@ -1,6 +1,12 @@
 <template>
   <b-card>
-    <div class="img"></div>
+    <div class="img">
+      <div class="container h-100">
+        <div class="row h-100 justify-content-center align-items-center">
+          <i class="fa fa fa-circle-o-notch fa-spin fa-4x"></i>
+        </div>
+      </div>
+    </div>
     <b-card-header>
       <h4>
         <div class="spinner"></div>
@@ -27,6 +33,9 @@
       background: white;
       height: 342px;
       width: 100%;
+      .fa{
+        color: lightgray;
+      }
     }
     h4,small{
       display: block;
@@ -36,7 +45,7 @@
       overflow: hidden;
       .spinner{
         display: block;
-        background: whitesmoke;
+        background: lightgray;
         width: 40%;
         height: 30px;
         position: relative;

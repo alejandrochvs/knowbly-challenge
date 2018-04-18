@@ -8,7 +8,7 @@
           <b-form-input @input="search()" v-model="query.tags" size="sm" class="mr-sm-2" type="text"
                         placeholder="Search"></b-form-input>
           <router-link :to="{ path: 'images', query: query}">
-            <b-button size="sm" class="my-2 my-sm-0" type="submit">Search</b-button>
+            <b-button size="sm" class="my-2 my-sm-0" type="submit"><i class="fa fa-search"></i></b-button>
           </router-link>
         </b-nav-form>
       </b-navbar-nav>
