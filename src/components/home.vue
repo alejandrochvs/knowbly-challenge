@@ -47,28 +47,30 @@
         token: '',
         recentPhotos: [],
         loadingArr: new Array(12),
-        loading : true
+        loading : true,
+        api_key : 'b0dc2f2317d52ae7fe19397947f3d0a4'
       }
     },
     methods: {
       getProfile(_userId) {
         return new Promise((resolve, reject) => {
-          this.$http.get(`https://api.flickr.com/services/rest/?method=flickr.profile.getProfile&api_key=b4b1a215463c789385e178d1dbd70228&user_id=${_userId}&format=json&nojsoncallback=1`).then((profileRes) => {
+          this.$http.get(`https://api.flickr.com/services/rest/?method=flickr.profile.getProfile&api_key=${this.api_key}&user_id=${_userId}&format=json&nojsoncallback=1`).then((profileRes) => {
             resolve(profileRes.body.profile)
           })
         })
       },
       getSizes(_photoId) {
         return new Promise((resolve, reject) => {
-          this.$http.get(`https://api.flickr.com/services/rest/?method=flickr.photos.getSizes&api_key=b4b1a215463c789385e178d1dbd70228&photo_id=${_photoId}&format=json&nojsoncallback=1`).then((profileRes) => {
+          this.$http.get(`https://api.flickr.com/services/rest/?method=flickr.photos.getSizes&api_key=${this.api_key}&photo_id=${_photoId}&format=json&nojsoncallback=1`).then((profileRes) => {
             resolve(profileRes.body.sizes.size)
           })
         })
       },
       getRecentPhotos(_page = 0) {
         this.loading = true;
-        this.$http.get(`https://api.flickr.com/services/rest/?method=flickr.photos.getRecent&api_key=b4b1a215463c789385e178d1dbd70228&per_page=12&page=${_page}&format=json&nojsoncallback=1`).then((photosRes) => {
+        this.$http.get(`https://api.flickr.com/services/rest/?method=flickr.photos.getRecent&api_key=${this.api_key}&per_page=12&page=${_page}&format=json&nojsoncallback=1`).then((photosRes) => {
           photosRes.body.photos.photo.forEach((photo) => {
+            console.log(photo)
             this.getProfile(photo.owner).then((profile) => {
               photo.profile = profile
               this.getSizes(photo.id).then((sizes) => {

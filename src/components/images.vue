@@ -56,20 +56,21 @@ export default {
       loadingArr: new Array(12),
       page: 0,
       pages: 0,
-      loading : true
+      loading: true,
+      api_key: 'b0dc2f2317d52ae7fe19397947f3d0a4'
     }
   },
   methods: {
     getProfile (_userId) {
       return new Promise((resolve, reject) => {
-        this.$http.get(`https://api.flickr.com/services/rest/?method=flickr.profile.getProfile&api_key=b4b1a215463c789385e178d1dbd70228&user_id=${_userId}&format=json&nojsoncallback=1`).then((profileRes) => {
+        this.$http.get(`https://api.flickr.com/services/rest/?method=flickr.profile.getProfile&api_key=${this.api_key}&user_id=${_userId}&format=json&nojsoncallback=1`).then((profileRes) => {
           resolve(profileRes.body.profile)
         })
       })
     },
     getSizes (_photoId) {
       return new Promise((resolve, reject) => {
-        this.$http.get(`https://api.flickr.com/services/rest/?method=flickr.photos.getSizes&api_key=b4b1a215463c789385e178d1dbd70228&photo_id=${_photoId}&format=json&nojsoncallback=1`).then((profileRes) => {
+        this.$http.get(`https://api.flickr.com/services/rest/?method=flickr.photos.getSizes&api_key=${this.api_key}&photo_id=${_photoId}&format=json&nojsoncallback=1`).then((profileRes) => {
           resolve(profileRes.body.sizes.size)
         })
       })
@@ -77,8 +78,9 @@ export default {
     getPhotos () {
       this.loading = true;
       let url =
-          `https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=b4b1a215463c789385e178d1dbd70228&tags=${encodeURI(this.$route.query.tags)}&per_page=12&page=${this.page}&format=json&nojsoncallback=1`
+          `https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=${this.api_key}&tags=${encodeURI(this.$route.query.tags)}&per_page=12&page=${this.page}&format=json&nojsoncallback=1`
       this.$http.get(url).then((photosRes) => {
+        console.log(photosRes)
         this.pages = photosRes.body.photos.pages
         this.photos = []
         photosRes.body.photos.photo.forEach((photo) => {
