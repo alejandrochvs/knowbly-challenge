@@ -21,8 +21,8 @@
               <b-card-header>
                 <h4 class="one-line">
                   <a class="" style="color: #333" :href="'http://flickr.com/photos/' + photo.profile.id +'/' +
-                photo.id" :title="photo.title || 'No title'" target="_blank">
-                    {{photo.title || "No title"}}
+                photo.id" :title="photo.title || 'Untitled'" target="_blank">
+                    {{photo.title || "Untitled"}}
                   </a>
                 </h4>
               </b-card-header>
